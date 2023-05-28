@@ -20,16 +20,30 @@ public class AirportRepository {
     }
 
     public String getLargestAirportName() {
-        String answer = "";
-        int ans=0;
-        for(String name : airportMap.keySet()){
-            int co=airportMap.get(name).getNoOfTerminals();
-            if(co>ans){
-                ans=co;
-                answer=name;
+        String ans = "";
+        int terminals = 0;
+        for(Airport airport : airportMap.values()){
+
+            if(airport.getNoOfTerminals()>terminals){
+                ans = airport.getAirportName();
+                terminals = airport.getNoOfTerminals();
+            }else if(airport.getNoOfTerminals()==terminals){
+                if(airport.getAirportName().compareTo(ans)<0){
+                    ans = airport.getAirportName();
+                }
             }
         }
-        return answer;
+        return ans;
+//        String answer = "";
+//        int ans=0;
+//        for(String name : airportMap.keySet()){
+//            int co=airportMap.get(name).getNoOfTerminals();
+//            if(co>ans){
+//                ans=co;
+//                answer=name;
+//            }
+//        }
+//        return answer;
     }
 
     public double getShortestTime(City fromCity, City toCity) {
@@ -53,22 +67,43 @@ public class AirportRepository {
     }
 
     public String bookATicket(Integer flightId, Integer passengerId) {
-        Flight flight = flightMap.get(flightId);
-        int maxCapacity = flight.getMaxCapacity();
-        Set<Integer> list = new HashSet<>();
-        if(flightPassMap.containsKey(flightId)){
-            list = flightPassMap.get(flightId);
+        if(Objects.nonNull(flightPassMap.get(flightId)) &&(flightPassMap.get(flightId).size()<flightMap.get(flightId).getMaxCapacity())) {
+            Set<Integer> passengerList = flightPassMap.get(flightId);
+            if(passengerList.contains(passengerId)) {
+                return "FAILURE";
+            }
+            passengerList.add(passengerId);
+            flightPassMap.put(flightId,passengerList);
+            return "SUCCESS";
         }
-        int capacity = list.size();
-        if(capacity==maxCapacity) return "FAILURE";
-        else if(list.contains(passengerId)) return "FAILURE";
-        int fare = calculateFare(flightId);
-        paymentMap.put(passengerId, fare);
-        fare+=revenueMap.getOrDefault(flightId, 0);
-        revenueMap.put(flightId, fare);
-        list.add(passengerId);
-        flightPassMap.put(flightId, list);
-        return "SUCCUSS";
+        else if(Objects.isNull(flightPassMap.get(flightId))) {
+            flightPassMap.put(flightId,new HashSet<>());
+            Set<Integer> passengerList = flightPassMap.get(flightId);
+
+            if(passengerList.contains(passengerId)) {
+                return "FAILURE";
+            }
+            passengerList.add(passengerId);
+            flightPassMap.put(flightId,passengerList);
+            return "SUCCESS";
+        }
+        return "FAILURE";
+//        Flight flight = flightMap.get(flightId);
+//        int maxCapacity = flight.getMaxCapacity();
+//        Set<Integer> list = new HashSet<>();
+//        if(flightPassMap.containsKey(flightId)){
+//            list = flightPassMap.get(flightId);
+//        }
+//        int capacity = list.size();
+//        if(capacity==maxCapacity) return "FAILURE";
+//        else if(list.contains(passengerId)) return "FAILURE";
+//        int fare = calculateFare(flightId);
+//        paymentMap.put(passengerId, fare);
+//        fare+=revenueMap.getOrDefault(flightId, 0);
+//        revenueMap.put(flightId, fare);
+//        list.add(passengerId);
+//        flightPassMap.put(flightId, list);
+//        return "SUCCUSS";
     }
 
     public int calculateFare(Integer flightId) {
