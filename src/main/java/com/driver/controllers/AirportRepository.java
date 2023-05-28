@@ -25,7 +25,7 @@ public class AirportRepository {
         for(String name : airportMap.keySet()){
             int co=airportMap.get(name).getNoOfTerminals();
             if(co>ans){
-                ans=0;
+                ans=co;
                 answer=name;
             }
         }
@@ -61,6 +61,7 @@ public class AirportRepository {
         }
         int capacity = list.size();
         if(capacity>=maxCapacity) return "FAILURE";
+        else if(list.contains(passengerId)) return "FAILURE";
         int fare = calculateFare(flightId);
         paymentMap.put(passengerId, fare);
         fare+=revenueMap.getOrDefault(flightId, 0);
@@ -109,7 +110,7 @@ public class AirportRepository {
         City city = flight.getFromCity();
         for(String airportName : airportMap.keySet()){
             Airport airport = airportMap.get(airportName);
-            if(city.equals(airport)){
+            if(city.equals(airport.getCity())){
                 return airportName;
             }
         }
@@ -123,7 +124,7 @@ public class AirportRepository {
             City city = airport.getCity();
             for(Flight flight : flightMap.values()){
                 if(date.equals(flight.getFlightDate())){
-                    if(city.equals(flight.getFromCity()) && city.equals(flight.getToCity())){
+                    if(city.equals(flight.getFromCity()) || city.equals(flight.getToCity())){
                         Integer flightId = flight.getFlightId();
                         Set<Integer> list = flightPassMap.get(flightId);
                         if(list!=null){
