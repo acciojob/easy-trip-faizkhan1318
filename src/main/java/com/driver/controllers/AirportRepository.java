@@ -60,7 +60,7 @@ public class AirportRepository {
             list = flightPassMap.get(flightId);
         }
         int capacity = list.size();
-        if(capacity>=maxCapacity) return "FAILURE";
+        if(capacity==maxCapacity) return "FAILURE";
         else if(list.contains(passengerId)) return "FAILURE";
         int fare = calculateFare(flightId);
         paymentMap.put(passengerId, fare);
