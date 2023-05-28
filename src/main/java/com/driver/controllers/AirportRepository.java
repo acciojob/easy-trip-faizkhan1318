@@ -173,7 +173,12 @@ public class AirportRepository {
     }
 
     public int calculateRevenue(Integer flightId) {
-        Integer revenue = revenueMap.getOrDefault(flightId, 0);
-        return revenue;
+        int noOfPeopleBooked = flightPassMap.get(flightId).size();
+        if(noOfPeopleBooked == 1) return 3000;
+        int variableFare = (noOfPeopleBooked*(noOfPeopleBooked+1))*25;
+        int fixedFare = 3000*noOfPeopleBooked;
+        int totalFare = variableFare + fixedFare;
+
+        return totalFare;
     }
 }
